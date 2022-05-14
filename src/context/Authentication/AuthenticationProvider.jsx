@@ -10,13 +10,14 @@ const USER_DATA = {
 };
 
 const AuthenticationProvider = ({ children }) => {
-	const [user, setUser] = React.useState(null);
+	const [user, setUser] = React.useState(() => window.localStorage.getItem("user"));
 
 	const login = ({ email, password }) => {
 		return new Promise((resolve, reject) =>
 			setTimeout(() => {
 				if (email === USER_DATA.email && password === USER_DATA.password) {
 					setUser(USER_DATA);
+					window.localStorage.setItem("user", JSON.stringify(USER_DATA));
 					return resolve();
 				} else {
 					return reject("Hatalı e-posta veya şifre girdiniz, lütfen tekrar deneyin.");
@@ -29,6 +30,7 @@ const AuthenticationProvider = ({ children }) => {
 		new Promise((resolve, reject) => {
 			setTimeout(() => {
 				setUser(null);
+				window.localStorage.setItem("user", null);
 				return resolve();
 			}, 1000);
 		});
