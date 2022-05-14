@@ -15,7 +15,6 @@ import { BookOnline as BookOnlineIcon } from "@mui/icons-material";
 
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import SettingsMenu from "./SettingsMenu";
-import { Badge } from "@mui/material";
 import { useAuth } from "../../context/Authentication";
 
 const pages = [
@@ -27,7 +26,7 @@ const settings = [
 	{
 		link: "/account",
 		name: "Hesap",
-		appendix: <Badge color="secondary" badgeContent={4} />,
+		// appendix: <Badge color="secondary" badgeContent={4} />,
 	},
 ];
 
@@ -171,12 +170,7 @@ const Navbar = () => {
 						<Box sx={{ flexGrow: 0 }}>
 							<Tooltip title="Ayarlar">
 								<IconButton onClick={openUserMenu} sx={{ p: 0 }}>
-									<Badge color="secondary" badgeContent={4}>
-										<Avatar
-											alt={`${user.firstName} ${user.lastName}`}
-											src={user.imgURL}
-										/>
-									</Badge>
+									<Avatar alt={`${user.firstName} ${user.lastName}`} src={user.imgURL} />
 								</IconButton>
 							</Tooltip>
 							<SettingsMenu

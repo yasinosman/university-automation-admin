@@ -5,6 +5,8 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import HomePage from "./pages/Home";
 import AccountPage from "./pages/Account";
 import LoginPage from "./pages/Login";
+import AddNewsPage from "./pages/AddNews";
+import AddEventPage from "./pages/AddEvent";
 
 function App() {
 	return (
@@ -12,7 +14,30 @@ function App() {
 			<BrowserRouter>
 				<CssBaseline />
 				<Routes>
-					<Route path="/" element={<HomePage />} />
+					<Route
+						path="/"
+						element={
+							<ProtectedRoute>
+								<HomePage />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/addNews"
+						element={
+							<ProtectedRoute>
+								<AddNewsPage />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/addEvent"
+						element={
+							<ProtectedRoute>
+								<AddEventPage />
+							</ProtectedRoute>
+						}
+					/>
 
 					<Route path="/login" element={<LoginPage />} />
 					<Route
