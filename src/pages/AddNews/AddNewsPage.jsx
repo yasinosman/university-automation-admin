@@ -1,7 +1,8 @@
-import { Container } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import React from "react";
 import Navbar from "../../components/Navbar";
 import PageTitle from "../../components/PageTitle";
+import AddNewsForm from "./components/AddNewsForm";
 
 const AddNewsPage = () => {
 	return (
@@ -10,6 +11,10 @@ const AddNewsPage = () => {
 
 			<Container maxWidth="xl">
 				<PageTitle title="Haber Ekle" />
+			</Container>
+
+			<Container maxWidth="xl">
+				<AddNewsForm />
 			</Container>
 		</>
 	);
