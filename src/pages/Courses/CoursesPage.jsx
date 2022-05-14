@@ -2,6 +2,7 @@ import { Container, Grid } from "@mui/material";
 import React from "react";
 import Navbar from "../../components/Navbar";
 import PageTitle from "../../components/PageTitle";
+import AddAnnouncementForm from "./components/AddAnnouncementForm";
 import AddAssignmentForm from "./components/AddAssignmentForm";
 
 const CoursesPage = () => {
@@ -19,7 +20,7 @@ const CoursesPage = () => {
 						<AddAssignmentForm />
 					</Grid>
 					<Grid item xs={12} md={6}>
-						Duyuru ekle
+						<AddAnnouncementForm />
 					</Grid>
 				</Grid>
 			</Container>

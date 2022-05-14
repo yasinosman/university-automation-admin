@@ -49,7 +49,7 @@ const AddAssignmentForm = () => {
 		initialValues: {
 			title: "",
 			description: "",
-			deadline: new Date(),
+			deadline: tomorrow,
 			points: "",
 			course: "",
 		},
@@ -145,7 +145,7 @@ const AddAssignmentForm = () => {
 					</FormHelperText>
 				)}
 				<Button color="primary" variant="contained" type="submit">
-					Bilgileri Güncelle
+					Ödev Ekle
 				</Button>
 			</Box>
 		</form>
