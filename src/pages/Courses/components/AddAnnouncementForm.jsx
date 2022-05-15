@@ -1,7 +1,26 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+	Box,
+	Button,
+	FormControl,
+	FormHelperText,
+	InputLabel,
+	MenuItem,
+	Select,
+	TextField,
+	Typography,
+} from "@mui/material";
 import { useFormik } from "formik";
 import React from "react";
 import * as Yup from "yup";
+
+const courses = [
+	"Bilgisayar Mimarisi",
+	"Web Programlama",
+	"Computer Network and Technologies",
+	"Software Engineering",
+	"Software Testing and Quality",
+	"İş Hukuku",
+];
 
 const AnnouncementSchema = Yup.object().shape({
 	title: Yup.string()
@@ -12,6 +31,7 @@ const AnnouncementSchema = Yup.object().shape({
 		.min(2, "Açıklama en az 2 karakter olmalıdır")
 		.max(200, "Açıklama en fazla 200 karakter olmalıdır")
 		.required("Açıklama boş bırakılamaz"),
+	course: Yup.string().oneOf(courses, "Ders seçimi yanlış").required("Ders boş bırakılamaz"),
 });
 
 const AddAnnouncementForm = () => {
@@ -19,6 +39,7 @@ const AddAnnouncementForm = () => {
 		initialValues: {
 			title: "",
 			content: "",
+			course: "",
 		},
 		validationSchema: AnnouncementSchema,
 		onSubmit: (values) => {
@@ -37,9 +58,33 @@ const AddAnnouncementForm = () => {
 				}}
 			>
 				<Typography variant="overline" display="block" gutterBottom>
-					Ödev Detayları
+					Duyuru Detayları
 				</Typography>
 
+				<FormControl>
+					<InputLabel id="demo-simple-select-helper-label">Ders</InputLabel>
+					<Select
+						labelId="demo-simple-select-helper-label"
+						id="demo-simple-select-helper"
+						label="Ders"
+						value={formik.values.course}
+						onChange={(e) => {
+							formik.setFieldValue("course", e.target.value);
+						}}
+						error={formik.touched.course && Boolean(formik.errors.course)}
+						helperText={formik.touched.course && formik.errors.course}
+						sx={{ mb: 2 }}
+					>
+						{courses.map((course) => (
+							<MenuItem value={course}>{course}</MenuItem>
+						))}
+					</Select>
+					{formik.touched.course && formik.errors.course && (
+						<FormHelperText sx={{ mb: 2, mt: -1.5 }} error>
+							{formik.errors.course}
+						</FormHelperText>
+					)}
+				</FormControl>
 				<TextField
 					id="title"
 					name="title"
