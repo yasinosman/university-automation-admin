@@ -30,7 +30,7 @@ const AuthenticationProvider = ({ children }) => {
 		new Promise((resolve, reject) => {
 			setTimeout(() => {
 				setUser(null);
-				window.localStorage.setItem("user", null);
+				window.localStorage.removeItem("user");
 				return resolve();
 			}, 1000);
 		});
