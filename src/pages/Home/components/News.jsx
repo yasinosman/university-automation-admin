@@ -3,7 +3,10 @@ import { Container, Grid, Link } from "@mui/material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import DataCard from "./DataCard";
-import news from "../mock/news.json";
+import { useFetch } from "../../../hooks";
+
+import AlertPopup from "../../../components/AlertPopup";
+import Loading from "../../../components/Loading";
 
 const News = () => {
 	const navigate = useNavigate();
@@ -12,32 +15,41 @@ const News = () => {
 		navigate(`/news/${newsItem.id}`);
 	};
 
+	const { loading, error, value, setError } = useFetch("/announcements");
+
 	return (
 		<>
-			<Container maxWidth="xl">
-				<PageTitle title="Son 4 Haber" />
+			{value && (
+				<>
+					<Container maxWidth="xl">
+						<PageTitle title="Haberler" />
 
-				<Grid container spacing={5}>
-					{news.map((newsItem) => (
-						<Grid key={newsItem.id} item xs={12} sm={6} md={4} lg={3}>
-							<DataCard
-								onClick={() => navigateToNewsDetails(newsItem)}
-								title={newsItem.title}
-								subtitle={newsItem.subtitle}
-								imgURL={newsItem.imgURL}
-								imgAlt={newsItem.imgAlt}
-								date={newsItem.date}
-							/>
+						<Grid container spacing={5}>
+							{value.map((announcement) => (
+								<Grid key={announcement.id} item xs={12} sm={6} md={4} lg={3}>
+									<DataCard
+										onClick={() => navigateToNewsDetails(announcement)}
+										title={announcement.title}
+										subtitle={announcement.subtitle}
+										imgURL={announcement.imgURL}
+										imgAlt={announcement.imgAlt}
+										date={announcement.createdAt}
+									/>
+								</Grid>
+							))}
 						</Grid>
-					))}
-				</Grid>
-			</Container>
+					</Container>
 
-			<Container maxWidth="xl" sx={{ mb: 5, mt: 2 }}>
-				<Link component={RouterLink} to="/addNews">
-					Haber Ekle
-				</Link>
-			</Container>
+					<Container maxWidth="xl" sx={{ mb: 5, mt: 2 }}>
+						<Link component={RouterLink} to="/addNews">
+							Haber Ekle
+						</Link>
+					</Container>
+				</>
+			)}
+
+			{error && <AlertPopup error={error.message} handleClose={() => setError(false)} />}
+			<Loading loading={loading} />
 		</>
 	);
 };

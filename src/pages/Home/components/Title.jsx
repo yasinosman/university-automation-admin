@@ -7,7 +7,7 @@ const Title = () => {
 		<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 5 }}>
 			<BookOnline color="primary" sx={{ width: 50, height: 50 }} />
 			<Typography
-				variant="h3"
+				variant="h2"
 				component="h1"
 				href="/"
 				color="primary"
@@ -18,7 +18,7 @@ const Title = () => {
 					textDecoration: "none",
 				}}
 			>
-				uniPortal Admin
+				uniPortal
 			</Typography>
 		</Box>
 	);
