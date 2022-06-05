@@ -1,43 +1,79 @@
 import React from "react";
+import Loading from "../../components/Loading";
 import AuthenticationContext from "./AuthenticationContext";
 
-const USER_DATA = {
-	firstName: "Yasin",
-	lastName: "Osman",
-	email: "yasinosman10@gmail.com",
-	imgURL: "https://picsum.photos/100",
-	password: "123123",
-};
-
 const AuthenticationProvider = ({ children }) => {
-	const [user, setUser] = React.useState(() => window.localStorage.getItem("user"));
+	const [user, setUser] = React.useState(() => JSON.parse(window.localStorage.getItem("user")));
+
+	const [loading, setLoading] = React.useState(false);
 
 	const login = ({ email, password }) => {
-		return new Promise((resolve, reject) =>
-			setTimeout(() => {
-				if (email === USER_DATA.email && password === USER_DATA.password) {
-					setUser(USER_DATA);
-					window.localStorage.setItem("user", JSON.stringify(USER_DATA));
-					return resolve();
-				} else {
-					return reject("Hatalı e-posta veya şifre girdiniz, lütfen tekrar deneyin.");
+		return new Promise(async (resolve, reject) => {
+			try {
+				setLoading(true);
+
+				// signin
+				const tokenResponse = await fetch(`${process.env.REACT_APP_API_URL}/auth/signin`, {
+					method: "post",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ email: email, password: password }),
+				});
+
+				if (!tokenResponse.ok) {
+					return reject("Geçersiz e-posta ya da şifre girdiniz. Lütfen tekrar deneyin");
 				}
-			}, 1000)
-		);
+
+				const tokenData = await tokenResponse.json();
+				window.localStorage.setItem("accessToken", tokenData.access_token);
+
+				// fetch user data
+				const userResponse = await fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
+					headers: { Authorization: `Bearer ${tokenData.access_token}` },
+				});
+				if (userResponse.ok) {
+					const userData = await userResponse.json();
+					window.localStorage.setItem("user", JSON.stringify(userData.user));
+
+					setUser(userData.user);
+
+					return resolve(userData.user);
+				}
+
+				return resolve(null);
+			} catch (error) {
+				setUser(null);
+				return reject(error.message);
+			} finally {
+				setLoading(false);
+			}
+		});
 	};
 
 	const logout = () =>
-		new Promise((resolve, reject) => {
+		new Promise((resolve) => {
+			setLoading(true);
+
 			setTimeout(() => {
 				setUser(null);
+
 				window.localStorage.removeItem("user");
+				window.localStorage.removeItem("accessToken");
+
+				setLoading(false);
 				return resolve();
 			}, 1000);
 		});
 
-	const value = { user, login, logout };
+	const value = { user, login, logout, loading, setUser };
 
-	return <AuthenticationContext.Provider value={value}>{children}</AuthenticationContext.Provider>;
+	return (
+		<AuthenticationContext.Provider value={value}>
+			<>
+				{children}
+				<Loading loading={loading} />
+			</>
+		</AuthenticationContext.Provider>
+	);
 };
 
 export default AuthenticationProvider;
