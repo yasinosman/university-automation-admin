@@ -12,15 +12,8 @@ import {
 import { useFormik } from "formik";
 import React from "react";
 import * as Yup from "yup";
-
-const courses = [
-	"Bilgisayar Mimarisi",
-	"Web Programlama",
-	"Computer Network and Technologies",
-	"Software Engineering",
-	"Software Testing and Quality",
-	"İş Hukuku",
-];
+import AlertPopup from "../../../components/AlertPopup/AlertPopup";
+import Loading from "../../../components/Loading";
 
 const AnnouncementSchema = Yup.object().shape({
 	title: Yup.string()
@@ -31,10 +24,13 @@ const AnnouncementSchema = Yup.object().shape({
 		.min(2, "Açıklama en az 2 karakter olmalıdır")
 		.max(200, "Açıklama en fazla 200 karakter olmalıdır")
 		.required("Açıklama boş bırakılamaz"),
-	course: Yup.string().oneOf(courses, "Ders seçimi yanlış").required("Ders boş bırakılamaz"),
+	course: Yup.string().required("Ders boş bırakılamaz"),
 });
 
-const AddAnnouncementForm = () => {
+const AddAnnouncementForm = ({ courses }) => {
+	const [loading, setLoading] = React.useState(false);
+	const [error, setError] = React.useState(null);
+
 	const formik = useFormik({
 		initialValues: {
 			title: "",
@@ -42,13 +38,43 @@ const AddAnnouncementForm = () => {
 			course: "",
 		},
 		validationSchema: AnnouncementSchema,
-		onSubmit: (values) => {
-			alert(JSON.stringify(values, null, 2));
+		onSubmit: async (values) => {
+			setLoading(true);
+
+			try {
+				const res = await fetch(`${process.env.REACT_APP_API_URL}/courses/${values.course}/announcements`, {
+					method: "post",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${window.localStorage.getItem("accessToken")}`,
+					},
+					body: JSON.stringify({
+						title: values.title,
+						content: values.content,
+					}),
+				});
+
+				if (!res.ok) {
+					setLoading(false);
+					setError("Duyuru eklenirken bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+					return;
+				}
+
+				formik.resetForm();
+			} catch (error) {
+				console.log({ error });
+				setError("Duyuru eklenirken bir hata oluştu, lütfen daha sonra tekrar deneyin.");
+			} finally {
+				setLoading(false);
+			}
 		},
 	});
 
 	return (
 		<form onSubmit={formik.handleSubmit}>
+			{error && <AlertPopup error={error} handleClose={() => setError(null)} />}
+			<Loading loading={loading} />
+
 			<Box
 				sx={{
 					display: "flex",
@@ -76,7 +102,7 @@ const AddAnnouncementForm = () => {
 						sx={{ mb: 2 }}
 					>
 						{courses.map((course) => (
-							<MenuItem value={course}>{course}</MenuItem>
+							<MenuItem value={course.id}>{course.title}</MenuItem>
 						))}
 					</Select>
 					{formik.touched.course && formik.errors.course && (
